@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
 
 #define INBUF_SIZE 256
 #define OUTBUF_SIZE (2 * INBUF_SIZE)
@@ -11,7 +12,14 @@ static unsigned char outbuf[OUTBUF_SIZE];
 int main(int argc, char *argv[])
 {
 	ssize_t read_res, write_res, bytes_to_write;
+	int no_remove = 0;
 	unsigned char c;
+
+	for (int i = 1; i < argc; i++) {
+		if (strcmp(argv[i], "--no-remove") == 0) {
+			no_remove = 1;
+		}
+	}
 
 	for (;;) {
 		bytes_to_write = 0;
@@ -21,9 +29,12 @@ int main(int argc, char *argv[])
 		for (int i = 0; i < read_res; i++) {
 			c = inbuf[i];
 			if (c != '\n') {
-				outbuf[2 * i] = c;
-				outbuf[1 + 2 * i] = '\n';
+				outbuf[bytes_to_write] = c;
+				outbuf[bytes_to_write + 1] = '\n';
 				bytes_to_write += 2;
+			} else if (no_remove) {
+				outbuf[bytes_to_write] = '\n';
+				bytes_to_write += 1;
 			}
 		}
 		do {
