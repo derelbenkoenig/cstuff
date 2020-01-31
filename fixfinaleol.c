@@ -47,16 +47,17 @@ static void handle_err(int error, char *format, ...)
 	errbuf[ERRBUF_LEN - 1] = '\0';
 	formatbuf[ERRBUF_LEN - 1] = '\0';
 
-	strncpy(formatbuf, format, ERRBUF_LEN - 1);
+	/* leaving 2 bytes for \n and \0 at end of string */
+	strncpy(formatbuf, format, ERRBUF_LEN - 2);
 	format_len = strlen(formatbuf);
 
-	if (format_len + SEPARATOR_LEN + 1 > ERRBUF_LEN) {
+	if (format_len + SEPARATOR_LEN + 2 > ERRBUF_LEN) {
 		goto panic;
 	}
 
-	strncat(formatbuf, SEPARATOR, ERRBUF_LEN - 1 - format_len);
+	strncat(formatbuf, SEPARATOR, ERRBUF_LEN - 2 - format_len);
 
-	res = strerror_r(error, errbuf, ERRBUF_LEN - 1);
+	res = strerror_r(error, errbuf, ERRBUF_LEN - 2);
 
 	if (res != 0) {
 		goto panic;
@@ -64,16 +65,18 @@ static void handle_err(int error, char *format, ...)
 
 	err_len = strlen(errbuf);
 
-	if (err_len + format_len + 1 > ERRBUF_LEN) {
+	if (err_len + format_len + 2 > ERRBUF_LEN) {
 		goto panic;
 	}
 
-	strncat(formatbuf, errbuf, ERRBUF_LEN - format_len - 1);
+	strncat(formatbuf, errbuf, ERRBUF_LEN - format_len - 2);
+	strncat(formatbuf, "\n", ERRBUF_LEN - format_len - 1);
 
-	if (formatbuf[ERRBUF_LEN - 1] != '\0') {
+	if (formatbuf[ERRBUF_LEN - 1] != '\0'
+			|| formatbuf[strlen(formatbuf) - 1] != '\n') {
 		goto panic;
 	}
-	
+
 	vdprintf(2, formatbuf, format_args);
 	va_end(format_args);
 
