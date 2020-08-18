@@ -119,7 +119,7 @@ void* resolver_loop(void *arg)
 			continue;
 		}
 		if (suspend_result == EAI_ALLDONE) {
-			/* TODO gwthread_sleep or whatever (block on wakefd)
+			/* TODO this is where we would wait for more requests to be submitted by other threads
 			 * in actual usage, whatever threads were requesting lookups would be modifying the contents
 			 * of the lookup list */
 			dprintf(2, "all done, sleeping\n");
