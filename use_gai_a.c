@@ -15,11 +15,8 @@
 
 static const char *_s_host_names[NUM_LOOKUPS] = {
 	"www.google.com"
-	, "smpp-04.lab1.bandwidthclec.com"
-	, "mms-01a.dfw1.bandwidthclec.com"
 	, "www.bandwidth.com"
 	, "www.facebook.com"
-	, "api.catapult.inetwork.com"
 	, "foo.bar.baz.de"
 };
 
